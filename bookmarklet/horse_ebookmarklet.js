@@ -13,7 +13,7 @@
 		script.type = 'text/javascript';
 
 		// Load the specified jQuery from the Google AJAX API server (minified).
-		script.src = 'http://ajax.googleapis.com/ajax/libs/jquery/' + reqVersion + '/jquery.min.js';
+		script.src = '//ajax.googleapis.com/ajax/libs/jquery/' + reqVersion + '/jquery.min.js';
 
 		// When the script is loaded, remove it, execute jQuery.noConflict( true )
 		// on the newly-loaded jQuery (thus reverting any previous version to its
@@ -53,37 +53,56 @@
 			for (var i = 0; i < tweetCount; i++) {
 				tweetArray.push( data[i].text.replace(urlRegex, '') );
 			}
+			// Sort all of the tweets from longest to shortest
+			tweetArray.sort(function(a, b){
+				return b.length - a.length;
+			});
 
-		});
+			var maxTweetLength = tweetArray[0].length;
+			var minTweetLength = tweetArray[tweetArray.length - 1].length;
+			var dist = maxTweetLength;
+			var eachLength = (maxTweetLength - minTweetLength) / tweetArray.length;
+			var lengthsArray = [];
 
-		// These are the elements we're looking for
-		var elements = $('p, h1, h2, h3, h4, h5, h6, li, a, div, span');
-
-		elements.each(function( index, element ) {
-			// Let's ignore elements with text no greater
-			console.log(element.text);
-			if (typeof element.text !== 'undefined') {
-
-				//console.log(element.text);
+			for (var i = 0; i < tweetArray.length; i++) {
+				dist = dist - eachLength;
+				lengthsArray.push(Math.floor(dist));
 			}
 
+			// These are the elements we're looking for
+			var elements = $('p, h1, h2, h3, h4, h5, h6, li, a, div, span');
+
+			elements.each(function( index, element ) {
+				// Let's ignore elements with text no greater
+				if (($(this).text().length > 2) && ($(this).children().length === 0)) {
+					// Get the length of the text in each item.
+					var textLength = $(this).text().length;
+					$(this).text(findTweetByLength(textLength, tweetArray, maxTweetLength, minTweetLength));
+
+
+				}
+
+			});
+
 		});
 
+		
 
-        //         $("p, h1, h2, h3, h4, h5, h6, li, a, div, span").each(function () {
-        //             if (!(0 < $(this).children().length) || $(this).is("p")) {
-        //                 var b = $(this).text().length;
-        //                 if (5 < b) if ($(this).is("li, a, span")) {
-        //                     var a = c[Math.floor(Math.random() * c.length)],
-        //                         b = a.substring(0, 2 * b);
-        //                     $(this).text(b)
-        //                 } else a = c[Math.floor(Math.random() * c.length)], $(this).text(a)
-        //             }
-        //         });
-        //         $("img").each(function () {
-        //     var a = $(this).width(),
-        //         b = $(this).height();
-        //     1.8 > a / b && 0.4 < a / b ? ($(this).attr("src", "http://www.heyben.com/horse_ebookmarklet/img/horse_ebookmarklet.jpg"), $(this).width(a), $(this).height(b)) : ($(this).attr("src", "http://www.heyben.com/horse_ebookmarklet/img/horse_ebookmarklet.jpg"), $(this).width(a), b > a ? $(this).height(1.18 * a) : $(this).width(0.84 * b))
-        // }
+		function findTweetByLength(num, array, max, min) {
+
+			var randomizedNumber = num + ((Math.floor(Math.random() * 6)) - 3);
+
+			if (randomizedNumber < 0) {
+				randomizedNumber = min;
+			}
+			else if (randomizedNumber > max) {
+				randomizedNumber = max;
+			}
+
+			return array[randomizedNumber];
+			
+
+		}
+
 	}
 );
