@@ -39,70 +39,81 @@
 	// Your jQuery code goes inside this callback. $ refers to the jQuery object,
 	// and L is a boolean that indicates whether or not an external jQuery file
 	// was just "L"oaded.
-	function( $, L ) {
+	function( $ ) {
 		'use strict';
-		'$:nomunge, L:nomunge'; // Used by YUI compressor.
 
-		var tweetArray = [];
+		var horseEbookmarklet = {
+			tweetArray: [],
+			init: function() {
+				this.getTweets();
+			},
+			getTweets: function() {
+				var that = this;
+				$.getJSON('//api.twitter.com/1/statuses/user_timeline.json?screen_name=horse_ebooks&count=200&callback=?', function (data) {
+					var urlRegex = /(https?:\/\/[^\s]+)/g;
+					var tweetCount = data.length;
+					for (var i = 0; i < tweetCount; i++) {
+						var tweetText = data[i].text.replace(urlRegex, '');
+						var tweetObject = { text: tweetText, length: tweetText.length };
+						that.tweetArray.push( tweetObject );
+					}
+					that.cacheElements();
+					that.replaceText();
+					that.replaceImages();
+				});
+			},
+			cacheElements: function() {
+				this.textElements = $('p, h1, h2, h3, h4, h5, h6, li, a, div, span'),
+				this.imgElements = $('img');
+			},
+			replaceImages: function() {
+				this.imgElements.each(function() {
+					var w = $(this).width(),
+						h = $(this).height();
 
-		// Get JSON of last 200 Horse Tweets
-		$.getJSON('http://api.twitter.com/1/statuses/user_timeline.json?screen_name=horse_ebooks&count=200&callback=?', function (data) {
-			// Not super reliable but good enough regex to find URLs
-			var urlRegex = /(https?:\/\/[^\s]+)/g;
-			var tweetCount = data.length;
-			for (var i = 0; i < tweetCount; i++) {
-				tweetArray.push( data[i].text.replace(urlRegex, '') );
-			}
-			// Sort all of the tweets from longest to shortest
-			tweetArray.sort(function(a, b){
-				return b.length - a.length;
-			});
+					var newImg = $(document.createElement('div')).css({
+						width: w,
+						height: h,
+						overflow: 'hidden'
+					}).html('<img src="http://www.heyben.com/horse_ebookmarklet/img/horse_ebookmarklet.jpg" alt="horse_ebooks" style="width: 100%; max-width: 100%; min-width: 100%; height: auto;" />');
 
-			var maxTweetLength = tweetArray[0].length;
-			var minTweetLength = tweetArray[tweetArray.length - 1].length;
-			var dist = maxTweetLength;
-			var eachLength = (maxTweetLength - minTweetLength) / tweetArray.length;
-			var lengthsArray = [];
+					$(this).replaceWith(newImg);
+				});
+			},
+			replaceText: function() {
+				var that = this;
+				this.textElements.each(function() {
+					// Let's ignore elements with only 1 or 2 characters and elements with children
+					if (($(this).text().length > 2) && ($(this).children().length === 0)) {
+						// Get the length of the text in each item.
+						var textLength = $(this).text().length;
+						var replacementText = that.getReplacementTweet(textLength);
+						$(this).text(replacementText);
+					}
 
-			for (var i = 0; i < tweetArray.length; i++) {
-				dist = dist - eachLength;
-				lengthsArray.push(Math.floor(dist));
-			}
-
-			// These are the elements we're looking for
-			var elements = $('p, h1, h2, h3, h4, h5, h6, li, a, div, span');
-
-			elements.each(function( index, element ) {
-				// Let's ignore elements with text no greater
-				if (($(this).text().length > 2) && ($(this).children().length === 0)) {
-					// Get the length of the text in each item.
-					var textLength = $(this).text().length;
-					$(this).text(findTweetByLength(textLength, tweetArray, maxTweetLength, minTweetLength));
-
-
+				});
+			},
+			getReplacementTweet: function(length) {
+				if (length < 140) {
+					this.greppedTweets = $.grep( this.tweetArray, function(n) {
+						return (n.length > (length -4) && n.length < (length +4));
+					});
 				}
-
-			});
-
-		});
-
-		
-
-		function findTweetByLength(num, array, max, min) {
-
-			var randomizedNumber = num + ((Math.floor(Math.random() * 6)) - 3);
-
-			if (randomizedNumber < 0) {
-				randomizedNumber = min;
+				else {
+					this.greppedTweets = $.grep( this.tweetArray, function(n) {
+						return (n.length > 130 && n.length < 140);
+					});
+				}
+				var tweet = this.greppedTweets[Math.floor(Math.random()*this.greppedTweets.length)];
+				if (typeof tweet === 'undefined') {
+					tweet = false;
+				}
+				return tweet.text;
 			}
-			else if (randomizedNumber > max) {
-				randomizedNumber = max;
-			}
+		};
 
-			return array[randomizedNumber];
-			
+		horseEbookmarklet.init();
 
-		}
 
 	}
 );
