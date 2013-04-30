@@ -18,8 +18,8 @@
 			// For all tweets, remove anything matching the URL and put the tweet in a new object along with
 			// it's length. Then put that in the tweetArray.
 			var tweetText = data[i].text.replace(urlRegex, '');
-			var tweetObject = { text: tweetText, length: tweetText.length };
-			tweetArray.push( tweetObject );
+			//var tweetObject = { text: tweetText, length: tweetText.length };
+			tweetArray.push( tweetText );
 		}
 		horseE.init(tweetArray);
 	};
@@ -56,8 +56,10 @@
 				}
 			}
 		},
-		checkLength: function(element) {
-  			return element.length > 10;
+		checkLength: function(len) {
+			return function(element) {
+				return element.length > len;
+			}
 		}
 	}
 	/*
