@@ -56,12 +56,12 @@
 			var eLength = this.allElements.length;
 			for (var i = 0; i < eLength; i++) {
 				var el = this.allElements[i];
-				if (typeof el.innerText !== 'undefined') {
-					var len = el.innerText.length;
+				if (typeof el.innerHTML !== 'undefined') {
+					var len = el.innerHTML.length;
 					// For any element with no children that has text length of greater than 4, replace it
 					if ((len > 4) && (el.children.length === 0)) {
 						var eligibleTweets = this.tweets.filter(this.checkLength(len));
-						el.innerText = eligibleTweets[Math.floor(Math.random() * eligibleTweets.length)];
+						el.innerHTML = eligibleTweets[Math.floor(Math.random() * eligibleTweets.length)];
 					}
 				}
 			}
@@ -71,19 +71,27 @@
 			for (var i = 0; i < eLength; i++) {
 				var el = this.allImages[i];
 				if ((el.width > 15) && (el.height > 15)){
+					// Get element's height, width and classes.
 					var w = el.width;
 					var h = el.height;
 					var elClass = el.className;
+
+					// Create div to replace image with correct height, width, classes.
 					var newDiv = document.createElement('div');
-					var newImg = document.createElement('img');
-					newImg.src = 'http://www.heyben.com/horse_ebookmarklet/img/horse_ebookmarklet.jpg';
 					newDiv.className = elClass;
 					newDiv.style.width = w + 'px';
 					newDiv.style.height = h + 'px';
 					newDiv.style.overflow = 'hidden';
-					el.parentNode.replaceChild(newDiv, el);
+
+
+					var newImg = document.createElement('img');
+					// Give image the source and make it 100% width
+					newImg.src = 'http://www.heyben.com/horse_ebookmarklet/img/horse_ebookmarklet.jpg';
 					newImg.style.width = '100%';
 					newImg.style.height = 'auto';
+
+					// Append our new elements
+					el.parentNode.replaceChild(newDiv, el);
 					newDiv.appendChild(newImg);
 				}
 			}
