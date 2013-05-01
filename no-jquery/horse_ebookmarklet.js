@@ -4,7 +4,7 @@
  * of the bookmarklet without jQuery.
  */
 
-(function(){
+(function(window, document, undefined){
 	'use strict';
 
 	// Define our callback for the Twitter API call
@@ -104,4 +104,4 @@
 		}
 	};
 
-})();
+})(window, document);
