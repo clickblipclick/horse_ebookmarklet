@@ -6,18 +6,9 @@
 
 (function(){
 	'use strict';
-	// Get document head and create script tag to inject.
-	var docHead = document.getElementsByTagName('head').item(0),
-		jsonScript = document.createElement('script'),
-		tweetArray = [];
 
-	// Append JSON to page which calls getTweets callback.
-	jsonScript.type = 'text/javascript';
-	jsonScript.src = '//api.twitter.com/1/statuses/user_timeline.json?screen_name=horse_ebooks&count=200&callback=getTweets';
-
-	docHead.appendChild(jsonScript);
-
-	var getTweets = function(data) {
+	// Define our callback for the Twitter API call
+	window.getTweets = function(data) {
 		var urlRegex = /(https?:\/\/[^\s]+)/g,
 			tweetCount = data.length;
 		for (var i = 0; i < tweetCount; i++) {
@@ -31,7 +22,16 @@
 		horseE.init(tweetArray);
 	};
 
+	// Get document head and create script tag to inject.
+	var docHead = document.getElementsByTagName('head').item(0),
+		jsonScript = document.createElement('script'),
+		tweetArray = [];
 
+	// Append JSON to page which calls getTweets callback.
+	jsonScript.type = 'text/javascript';
+	jsonScript.src = '//api.twitter.com/1/statuses/user_timeline.json?screen_name=horse_ebooks&count=200&callback=getTweets';
+
+	docHead.appendChild(jsonScript);
 
 	var horseE = {
 		init: function(tweets) {
@@ -42,12 +42,13 @@
 			this.replaceImages();
 		},
 		cacheElements: function(elements) {
-			// Takes an array of element tags, gets all matching elements 
+			// Takes an array of element tags, returns all matching elements 
 			var elementsLength = elements.length;
 			var allElements = [];
 			while(elementsLength--) {
 				var nl = document.getElementsByTagName(elements[elementsLength]);
-				for(var i = nl.length; i--; allElements.unshift(nl[i]));
+				// Combines nodelists to array
+				for(var i = nl.length; i--; allElements.unshift(nl[i])){};
 			}
 			return allElements;
 		},
@@ -57,7 +58,8 @@
 				var el = this.allElements[i];
 				if (typeof el.innerText !== 'undefined') {
 					var len = el.innerText.length;
-					if ((len > 2) && (el.children.length === 0)) {
+					// For any element with no children that has text length of greater than 4, replace it
+					if ((len > 4) && (el.children.length === 0)) {
 						var eligibleTweets = this.tweets.filter(this.checkLength(len));
 						el.innerText = eligibleTweets[Math.floor(Math.random() * eligibleTweets.length)];
 					}
@@ -94,4 +96,4 @@
 		}
 	};
 
-});
+})();
