@@ -86,7 +86,7 @@
 
 					var newImg = document.createElement('img');
 					// Give image the source and make it 100% width
-					newImg.src = 'http://www.heyben.com/horse_ebookmarklet/img/horse_ebookmarklet.jpg';
+					newImg.src = '//www.heyben.com/horse_ebookmarklet/img/horse_ebookmarklet.jpg';
 					newImg.style.width = '100%';
 					newImg.style.height = 'auto';
 

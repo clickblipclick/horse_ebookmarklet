@@ -83,7 +83,7 @@
 						height: h,
 						overflow: 'hidden',
 						position: 'relative'
-					}).html('<img src="http://www.heyben.com/horse_ebookmarklet/img/horse_ebookmarklet.jpg" alt="horse_ebooks" style="position:absolute; top: 0; left:0;width: 100%; max-width: 100%; min-width: 100%; height: auto;" />');
+					}).html('<img src="//www.heyben.com/horse_ebookmarklet/img/horse_ebookmarklet.jpg" alt="horse_ebooks" style="position:absolute; top: 0; left:0;width: 100%; max-width: 100%; min-width: 100%; height: auto;" />');
 					// Replace the images with that div/image
 					$(this).replaceWith(newImg);
 				});
