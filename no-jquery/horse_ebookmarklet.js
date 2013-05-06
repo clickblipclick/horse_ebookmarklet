@@ -88,6 +88,8 @@
 					// Give image the source and make it 100% width
 					newImg.src = '//www.heyben.com/horse_ebookmarklet/img/horse_ebookmarklet.jpg';
 					newImg.style.width = '100%';
+					newImg.style.maxWidth = '100%';
+					newImg.style.minWidth = '100%';
 					newImg.style.height = 'auto';
 
 					// Append our new elements
